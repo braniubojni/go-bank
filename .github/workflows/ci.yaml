@@ -17,6 +17,8 @@ jobs:
           POSTGRES_PASSWORD: 4d45b61f-5df9-4568-a912-d89d2e7c13a2
           POSTGRES_USER: root
           POSTGRES_DB: bank
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U root"
           --health-interval 10s
