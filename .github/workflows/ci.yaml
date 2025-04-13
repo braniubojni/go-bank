@@ -16,7 +16,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: 4d45b61f-5df9-4568-a912-d89d2e7c13a2
           POSTGRES_USER: root
-          POSTGRES_DB: bank
+          POSTGRES_DB: simple_bank
         ports:
           - 5432:5432
         options: >-
