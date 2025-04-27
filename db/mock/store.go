@@ -31,6 +31,9 @@ var _ db.Store = &MockStore{}
 //			CreateTransferFunc: func(ctx context.Context, arg db.CreateTransferParams) (db.Transfers, error) {
 //				panic("mock out the CreateTransfer method")
 //			},
+//			CreateUserFunc: func(ctx context.Context, arg db.CreateUserParams) (db.Users, error) {
+//				panic("mock out the CreateUser method")
+//			},
 //			DeleteAccountFunc: func(ctx context.Context, id int64) (db.Accounts, error) {
 //				panic("mock out the DeleteAccount method")
 //			},
@@ -51,6 +54,9 @@ var _ db.Store = &MockStore{}
 //			},
 //			GetTransferFunc: func(ctx context.Context, id int64) (db.Transfers, error) {
 //				panic("mock out the GetTransfer method")
+//			},
+//			GetUserFunc: func(ctx context.Context, username string) (db.Users, error) {
+//				panic("mock out the GetUser method")
 //			},
 //			ListAccountsFunc: func(ctx context.Context, arg db.ListAccountsParams) ([]db.Accounts, error) {
 //				panic("mock out the ListAccounts method")
@@ -92,6 +98,9 @@ type MockStore struct {
 	// CreateTransferFunc mocks the CreateTransfer method.
 	CreateTransferFunc func(ctx context.Context, arg db.CreateTransferParams) (db.Transfers, error)
 
+	// CreateUserFunc mocks the CreateUser method.
+	CreateUserFunc func(ctx context.Context, arg db.CreateUserParams) (db.Users, error)
+
 	// DeleteAccountFunc mocks the DeleteAccount method.
 	DeleteAccountFunc func(ctx context.Context, id int64) (db.Accounts, error)
 
@@ -112,6 +121,9 @@ type MockStore struct {
 
 	// GetTransferFunc mocks the GetTransfer method.
 	GetTransferFunc func(ctx context.Context, id int64) (db.Transfers, error)
+
+	// GetUserFunc mocks the GetUser method.
+	GetUserFunc func(ctx context.Context, username string) (db.Users, error)
 
 	// ListAccountsFunc mocks the ListAccounts method.
 	ListAccountsFunc func(ctx context.Context, arg db.ListAccountsParams) ([]db.Accounts, error)
@@ -164,6 +176,13 @@ type MockStore struct {
 			// Arg is the arg argument value.
 			Arg db.CreateTransferParams
 		}
+		// CreateUser holds details about calls to the CreateUser method.
+		CreateUser []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Arg is the arg argument value.
+			Arg db.CreateUserParams
+		}
 		// DeleteAccount holds details about calls to the DeleteAccount method.
 		DeleteAccount []struct {
 			// Ctx is the ctx argument value.
@@ -212,6 +231,13 @@ type MockStore struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID int64
+		}
+		// GetUser holds details about calls to the GetUser method.
+		GetUser []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Username is the username argument value.
+			Username string
 		}
 		// ListAccounts holds details about calls to the ListAccounts method.
 		ListAccounts []struct {
@@ -267,6 +293,7 @@ type MockStore struct {
 	lockCreateAccount       sync.RWMutex
 	lockCreateEntry         sync.RWMutex
 	lockCreateTransfer      sync.RWMutex
+	lockCreateUser          sync.RWMutex
 	lockDeleteAccount       sync.RWMutex
 	lockDeleteEntry         sync.RWMutex
 	lockDeleteTransfer      sync.RWMutex
@@ -274,6 +301,7 @@ type MockStore struct {
 	lockGetAccountForUpdate sync.RWMutex
 	lockGetEntry            sync.RWMutex
 	lockGetTransfer         sync.RWMutex
+	lockGetUser             sync.RWMutex
 	lockListAccounts        sync.RWMutex
 	lockListEntries         sync.RWMutex
 	lockListTransfers       sync.RWMutex
@@ -424,6 +452,42 @@ func (mock *MockStore) CreateTransferCalls() []struct {
 	mock.lockCreateTransfer.RLock()
 	calls = mock.calls.CreateTransfer
 	mock.lockCreateTransfer.RUnlock()
+	return calls
+}
+
+// CreateUser calls CreateUserFunc.
+func (mock *MockStore) CreateUser(ctx context.Context, arg db.CreateUserParams) (db.Users, error) {
+	if mock.CreateUserFunc == nil {
+		panic("MockStore.CreateUserFunc: method is nil but Store.CreateUser was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Arg db.CreateUserParams
+	}{
+		Ctx: ctx,
+		Arg: arg,
+	}
+	mock.lockCreateUser.Lock()
+	mock.calls.CreateUser = append(mock.calls.CreateUser, callInfo)
+	mock.lockCreateUser.Unlock()
+	return mock.CreateUserFunc(ctx, arg)
+}
+
+// CreateUserCalls gets all the calls that were made to CreateUser.
+// Check the length with:
+//
+//	len(mockedStore.CreateUserCalls())
+func (mock *MockStore) CreateUserCalls() []struct {
+	Ctx context.Context
+	Arg db.CreateUserParams
+} {
+	var calls []struct {
+		Ctx context.Context
+		Arg db.CreateUserParams
+	}
+	mock.lockCreateUser.RLock()
+	calls = mock.calls.CreateUser
+	mock.lockCreateUser.RUnlock()
 	return calls
 }
 
@@ -676,6 +740,42 @@ func (mock *MockStore) GetTransferCalls() []struct {
 	mock.lockGetTransfer.RLock()
 	calls = mock.calls.GetTransfer
 	mock.lockGetTransfer.RUnlock()
+	return calls
+}
+
+// GetUser calls GetUserFunc.
+func (mock *MockStore) GetUser(ctx context.Context, username string) (db.Users, error) {
+	if mock.GetUserFunc == nil {
+		panic("MockStore.GetUserFunc: method is nil but Store.GetUser was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Username string
+	}{
+		Ctx:      ctx,
+		Username: username,
+	}
+	mock.lockGetUser.Lock()
+	mock.calls.GetUser = append(mock.calls.GetUser, callInfo)
+	mock.lockGetUser.Unlock()
+	return mock.GetUserFunc(ctx, username)
+}
+
+// GetUserCalls gets all the calls that were made to GetUser.
+// Check the length with:
+//
+//	len(mockedStore.GetUserCalls())
+func (mock *MockStore) GetUserCalls() []struct {
+	Ctx      context.Context
+	Username string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Username string
+	}
+	mock.lockGetUser.RLock()
+	calls = mock.calls.GetUser
+	mock.lockGetUser.RUnlock()
 	return calls
 }
 

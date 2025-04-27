@@ -28,7 +28,8 @@ test:
 server:
 	go run main.go
 
+# After any new changes related to the database, run this command to update the mock store
 mock:
-	moq -pkg mockdb -out db/mock/store.go db/sqlc Querier:MockStore
+	moq -pkg mockdb -out db/mock/store.go db/sqlc Store:MockStore
 
 .PHONY: postgres createdb dropdb migrateup migratedown migrateup-last migratedown-last sqlc server
